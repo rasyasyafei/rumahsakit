@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Primaya Hospital</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ANIMASI SIMPEL ELEGAN -->
+   
+    <div class="container">
+        <h2>Primaya Hospital</h2>
+
+        <h3>Tambah Data Pasien</h3>
+
+        <input type="text" id="nama" placeholder="Nama Pasien">
+        <input type="number" id="umur" placeholder="Umur">
+        <input type="text" id="penyakit" placeholder="Penyakit">
+
+        <button class="add-btn" id="btnAction" onclick="tambahPasien()">Tambah Pasien</button>
+
+        <h3>Daftar Pasien</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Umur</th>
+                    <th>Penyakit</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabelPasien"></tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
