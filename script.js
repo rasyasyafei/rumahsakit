@@ -1,168 +1,78 @@
-import React, { useState, useEffect } from "react";
+// LOAD DATA DARI LOCAL STORAGE
+let pasien = JSON.parse(localStorage.getItem("pasien")) || [];
 
-function App() {
-  const [pasien, setPasien] = useState([]);
-  const [nama, setNama] = useState("");
-  const [umur, setUmur] = useState("");
-  const [penyakit, setPenyakit] = useState("");
-  const [editIndex, setEditIndex] = useState(null);
+// RENDER DATA KE TABEL
+function renderTabel() {
+    let tabel = "";
 
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("pasien")) || [];
-    setPasien(data);
-  }, []);
+    pasien.forEach((p, index) => {
+        tabel += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${p.nama}</td>
+                <td>${p.umur}</td>
+                <td>${p.penyakit}</td>
+                <td>
+                    <button class="edit-btn" onclick="editPasien(${index})">Edit</button>
+                    <button class="delete-btn" onclick="hapusPasien(${index})">Hapus</button>
+                </td>
+            </tr>
+        `;
+    });
 
-  useEffect(() => {
+    document.getElementById("tabelPasien").innerHTML = tabel;
+
     localStorage.setItem("pasien", JSON.stringify(pasien));
-  }, [pasien]);
-
-  const handleSubmit = () => {
-    if (!nama || !umur || !penyakit) {
-      alert("Semua data harus diisi!");
-      return;
-    }
-
-    if (editIndex !== null) {
-      const dataBaru = [...pasien];
-      dataBaru[editIndex] = { nama, umur, penyakit };
-      setPasien(dataBaru);
-      setEditIndex(null);
-    } else {
-      setPasien([...pasien, { nama, umur, penyakit }]);
-    }
-
-    clearForm();
-  };
-
-  const handleEdit = (index) => {
-    const p = pasien[index];
-    setNama(p.nama);
-    setUmur(p.umur);
-    setPenyakit(p.penyakit);
-    setEditIndex(index);
-  };
-
-  const handleDelete = (index) => {
-    if (confirm("Yakin ingin menghapus data ini?")) {
-      const dataBaru = pasien.filter((_, i) => i !== index);
-      setPasien(dataBaru);
-    }
-  };
-
-  const clearForm = () => {
-    setNama("");
-    setUmur("");
-    setPenyakit("");
-  };
-
-  return React.createElement(
-    "div",
-    { style: styles.container },
-    React.createElement("h2", null, "Primaya Hotspital"),
-    React.createElement("h3", null, "Tambah Data Pasien"),
-    React.createElement("input", {
-      type: "text",
-      placeholder: "Nama Pasien",
-      value: nama,
-      onChange: (e) => setNama(e.target.value),
-      style: styles.input,
-    }),
-    React.createElement("input", {
-      type: "number",
-      placeholder: "Umur",
-      value: umur,
-      onChange: (e) => setUmur(e.target.value),
-      style: styles.input,
-    }),
-    React.createElement("input", {
-      type: "text",
-      placeholder: "Penyakit",
-      value: penyakit,
-      onChange: (e) => setPenyakit(e.target.value),
-      style: styles.input,
-    }),
-    React.createElement(
-      "button",
-      { onClick: handleSubmit, style: styles.button },
-      editIndex !== null ? "Update Pasien" : "Tambah Pasien"
-    ),
-    React.createElement("h3", null, "Daftar Pasien"),
-    React.createElement(
-      "table",
-      { style: styles.table },
-      React.createElement(
-        "thead",
-        null,
-        React.createElement(
-          "tr",
-          null,
-          React.createElement("th", null, "No"),
-          React.createElement("th", null, "Nama"),
-          React.createElement("th", null, "Umur"),
-          React.createElement("th", null, "Penyakit"),
-          React.createElement("th", null, "Aksi")
-        )
-      ),
-      React.createElement(
-        "tbody",
-        null,
-        pasien.map((p, index) =>
-          React.createElement(
-            "tr",
-            { key: index },
-            React.createElement("td", null, index + 1),
-            React.createElement("td", null, p.nama),
-            React.createElement("td", null, p.umur),
-            React.createElement("td", null, p.penyakit),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "button",
-                { onClick: () => handleEdit(index) },
-                "Edit"
-              ),
-              React.createElement(
-                "button",
-                { onClick: () => handleDelete(index) },
-                "Hapus"
-              )
-            )
-          )
-        )
-      )
-    )
-  );
 }
 
-const styles = {
-  container: {
-    width: "600px",
-    margin: "50px auto",
-    padding: "20px",
-    background: "#f9f9f9",
-    borderRadius: "10px",
-    fontFamily: "Arial",
-  },
-  input: {
-    width: "100%",
-    padding: "10px",
-    marginBottom: "10px",
-  },
-  button: {
-    width: "100%",
-    padding: "10px",
-    background: "#0a9f59",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  table: {
-    width: "100%",
-    marginTop: "15px",
-    borderCollapse: "collapse",
-  },
-};
+// TAMBAH PASIEN
+function tambahPasien() {
+    let nama = document.getElementById("nama").value;
+    let umur = document.getElementById("umur").value;
+    let penyakit = document.getElementById("penyakit").value;
 
-export default App;
+    if (!nama || !umur || !penyakit) {
+        alert("Semua data harus diisi!");
+        return;
+    }
+
+    pasien.push({ nama, umur, penyakit });
+
+    renderTabel();
+    clearForm();
+}
+
+// HAPUS PASIEN
+function hapusPasien(index) {
+    if (confirm("Yakin ingin menghapus data ini?")) {
+        pasien.splice(index, 1);
+        renderTabel();
+    }
+}
+
+// EDIT PASIEN
+function editPasien(index) {
+    let p = pasien[index];
+
+    let newNama = prompt("Nama baru:", p.nama);
+    if (newNama === null) return;
+
+    let newUmur = prompt("Umur baru:", p.umur);
+    if (newUmur === null) return;
+
+    let newPenyakit = prompt("Penyakit baru:", p.penyakit);
+    if (newPenyakit === null) return;
+
+    pasien[index] = { nama: newNama, umur: newUmur, penyakit: newPenyakit };
+    renderTabel();
+}
+
+// CLEAR FORM
+function clearForm() {
+    document.getElementById("nama").value = "";
+    document.getElementById("umur").value = "";
+    document.getElementById("penyakit").value = "";
+}
+
+// TAMPILKAN DATA SAAT AWAL
+renderTabel();
